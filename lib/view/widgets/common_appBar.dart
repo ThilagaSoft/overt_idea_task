@@ -36,7 +36,7 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget
           {
             if(title.toLowerCase() == "chat screen")
               {
-                Navigator.pushReplacementNamed(context, "/chat");
+                Navigator.pushReplacementNamed(context, "/qrCode");
               }
             else
               {
