@@ -21,63 +21,66 @@ class QRCodePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: context.read<ChatBloc>(), // still use ChatBloc for token
-      child: Scaffold(
-        appBar: CommonAppBar(title: StaticText.chat, backButton: true),
-        body: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              ListTile(
-                tileColor: AppColors.primary.withOpacity(0.1),
-                onTap: () {
-                   context.read<ChatBloc>().add(FcmTokenRequest());
-                  context.read<QrViewCubit>().showGenerate();
-                },
-                leading: const Icon(Icons.share),
-                title: Text(StaticText.shareYourQRCode.tr(), style: TextStyles.boldText),
-                trailing: Icon(Icons.arrow_forward_ios, color: AppColors.boxShade),
-              ),
-              const SizedBox(height: 10),
-              ListTile(
-                tileColor: AppColors.primary.withOpacity(0.1),
-                onTap: () {
-                  context.read<QrViewCubit>().showScan();
-                },
-                leading: const Icon(Icons.qr_code_scanner),
-                title: Text(StaticText.scanOtherQrCode.tr(), style: TextStyles.boldText),
-                trailing: Icon(Icons.arrow_forward_ios, color: AppColors.boxShade),
-              ),
-              const SizedBox(height: 10),
-              BlocBuilder<QrViewCubit, QrViewMode>(
-                builder: (context, mode) {
-                  switch (mode) {
-                    case QrViewMode.scan:
-                      return QRScanScreen(qrController: qrController);
-                    case QrViewMode.generate:
-                      return const QRCodeGenScreen();
-                    case QrViewMode.tokenGot:
-                      return Column(
-                        children: [
-                          if (qrController.scannedCode.value?.isNotEmpty ?? false)
-                            Text(StaticText.deviceTokenSuccess, style: TextStyles.smallHintButtonText),
-                          const SizedBox(height: 30),
-                          if (qrController.scannedCode.value?.isNotEmpty ?? false)
-                            ButtonWidget(
-                              buttonText: StaticText.sendSms,
-                              onSubmit: () {
-                                Navigator.pushReplacementNamed(context, "/chat");
-                              },
-                            ),
-                        ],
-                      );
-                    default:
-                      return const SizedBox.shrink();
-                  }
-                },
-              )
-            ],
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: BlocProvider.value(
+        value: context.read<ChatBloc>(), // still use ChatBloc for token
+        child: Scaffold(
+          appBar: CommonAppBar(title: StaticText.chat, backButton: true),
+          body: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                ListTile(
+                  tileColor: AppColors.primary.withOpacity(0.1),
+                  onTap: () {
+                     context.read<ChatBloc>().add(FcmTokenRequest());
+                    context.read<QrViewCubit>().showGenerate();
+                  },
+                  leading: const Icon(Icons.share),
+                  title: Text(StaticText.shareYourQRCode.tr(), style: TextStyles.boldText),
+                  trailing: Icon(Icons.arrow_forward_ios, color: AppColors.boxShade),
+                ),
+                const SizedBox(height: 10),
+                ListTile(
+                  tileColor: AppColors.primary.withOpacity(0.1),
+                  onTap: () {
+                    context.read<QrViewCubit>().showScan();
+                  },
+                  leading: const Icon(Icons.qr_code_scanner),
+                  title: Text(StaticText.scanOtherQrCode.tr(), style: TextStyles.boldText),
+                  trailing: Icon(Icons.arrow_forward_ios, color: AppColors.boxShade),
+                ),
+                const SizedBox(height: 10),
+                BlocBuilder<QrViewCubit, QrViewMode>(
+                  builder: (context, mode) {
+                    switch (mode) {
+                      case QrViewMode.scan:
+                        return QRScanScreen(qrController: qrController);
+                      case QrViewMode.generate:
+                        return const QRCodeGenScreen();
+                      case QrViewMode.tokenGot:
+                        return Column(
+                          children: [
+                            if (qrController.scannedCode.value?.isNotEmpty ?? false)
+                              Text(StaticText.deviceTokenSuccess, style: TextStyles.smallHintButtonText),
+                            const SizedBox(height: 30),
+                            if (qrController.scannedCode.value?.isNotEmpty ?? false)
+                              ButtonWidget(
+                                buttonText: StaticText.sendSms,
+                                onSubmit: () {
+                                  Navigator.pushReplacementNamed(context, "/chat");
+                                },
+                              ),
+                          ],
+                        );
+                      default:
+                        return const SizedBox.shrink();
+                    }
+                  },
+                )
+              ],
+            ),
           ),
         ),
       ),
